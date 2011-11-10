@@ -6,11 +6,16 @@ This nifty little bash script edits the `hosts` file so that you cannot access t
 - [Facebook](http://facebook.com/)
 - [Smartphowned](http://smartphowned.com/)
 - [Unfriendable](http://unfriendable.com/)
-- [YouTube](http://youtube.com/)
 - [Google+](http://plus.google.com/)
 - [Twitter](http://twitter.com/)
 - [Klout](http://klout.com/)
+- [Demotivare](http://demotivare.com/)
+- [PopCult](http://popcult.ro/)
 
-Please, if you want more added, fork me, or just create an issue on thins thing ^^
+To add a new website to the denial list, just `add a new file` named after the `domain of the website` to the `denials` folder.
 
-Who knows, maybe in a few days i'll add some customization capabilities ^^
+On a Unix environment a simple :
+	
+	touch *website.com*
+
+While in the `denials` dir should be enough. Remember to restart zen mode if you make any changes to the denials list ^^

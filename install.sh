@@ -6,3 +6,5 @@ if [ -e $target ] || [ -h $target ]; then
 	sudo rm $target 
 fi
 sudo ln -s $script $target
+
+script="$(cd -P "$(dirname "$(readlink "$0")")" && pwd)/zenmode.sh"

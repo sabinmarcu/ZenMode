@@ -1,6 +1,12 @@
 #!/bin/bash
+
+script="$(cd -P "$(dirname "$(readlink "$0")")" && pwd)/denials/*"
 target=""
-add="127.0.0.1	facebook.com 9gag.com smartphowned.com unfriendable.com youtube.com plus.google.com twitter.com klout.com"
+add="127.0.0.1	"
+for file in $script
+do
+	add="$add${file##*\/} "
+done
 stop_zen()	{
 	echo "Stopping zen mode ..."
 	target=$(read_file /etc/.hosts)
