@@ -41,4 +41,35 @@ read_file()	{
 	l=$((${#c} - 2))
 	echo ${c:0:l}
 }
-[[ -a /etc/.hosts ]] && stop_zen || start_zen
+case "$1" in
+	start)
+		if [[ -a /etc/.hosts ]]; then
+			echo "Zen mode already started"
+		else
+			start_zen
+		fi
+		;;
+	stop)
+		if [[ -a /etc/.hosts ]]; then
+			stop_zen
+		else
+			echo "Zen mode already stopped"
+		fi
+		;;
+	restart|reload)
+		[[ -a /etc/.hosts ]] && stop_zen
+		start_zen
+		;;
+	allow)
+		rm "$base/denials/$2"
+		[[ -a /etc/.hosts ]] && stop_zen && start_zen
+		;;
+	deny)
+		touch "$base/denials/$2"
+		[[ -a /etc/.hosts ]] && stop_zen && start_zen
+		;;
+	*)
+		echo "Usage: zenmode {start|stop|restart|allow hosthame|deny hostname}" >&2
+		exit 1
+		;;
+esac
