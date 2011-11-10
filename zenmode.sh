@@ -1,12 +1,24 @@
 #!/bin/bash
 
-script="$(cd -P "$(dirname "$(readlink "$0")")" && pwd)/denials/*"
+
 target=""
 add="127.0.0.1	"
-for file in $script
-do
-	add="$add${file##*\/} "
-done
+base="$(cd -P "$(dirname "$(readlink "$0")")" && pwd)" 
+script="$base/denials"
+if [ -a $script ]; then
+	script="$script/*"
+	for file in $script
+	do
+		add="$add${file##*\/} "
+	done
+fi
+script="$base/denials.lst"
+if [ -a $script ]; then
+	while read line
+	do
+		add="$add$line "
+	done < $script
+fi
 stop_zen()	{
 	echo "Stopping zen mode ..."
 	target=$(read_file /etc/.hosts)
