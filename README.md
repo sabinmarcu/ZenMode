@@ -16,9 +16,13 @@ This nifty little bash script edits the `hosts` file so that you cannot access t
 
 On a Unix environment a simple :
 	
-	touch *website.com*
-
+	touch website.com
+	
 While in the `denials` dir should be enough. Remember to restart zen mode if you make any changes to the denials list ^^
+
+Or you can just run this, which also restarts zen mode automatically:
+
+	zenmode deny website.com
 
 2) To add a new website to the denial list, you can also add a new line to the `denials.lst` file. A simple : 
 
