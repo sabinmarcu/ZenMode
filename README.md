@@ -24,16 +24,5 @@ Or you can just run this, which also restarts zen mode automatically:
 
 	zenmode deny website.com
 
-2) To add a new website to the denial list, you can also add a new line to the `denials.lst` file. A simple : 
+## For any other help, please just run the app with no params whatsoever :)
 
-	echo "website.com" >> denials.lst
-
-Should be enough.
-
-## Both variants are optional.
-
-The script works with both working at the same time, only with one of them, or none, for that matter, although i'm not quite sure if you would want to bblock well, *NO WEBSITE*!
-
-Ah, well,
-
-# Have fun with it!
