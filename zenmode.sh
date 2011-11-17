@@ -44,6 +44,36 @@ crawl()	 {
 	fi
 	echo $add
 }
+watch()	{
+	echo "Started watching..."
+	files=$(crawl "$base/watches")
+	ison=0
+	canbeon=0
+	while [ ${#files} -gt 0 ]; do
+		aux=$(ps aux)
+		canbeon=0
+		for watch in $files
+		do
+			if [ $(echo $aux | grep -c $watch) -gt 0 ]; then
+				if [ $ison -eq 0 ]; then
+					start_zen
+					ison=1
+				fi
+				canbeon=1
+			fi
+		done
+		if [ $ison -eq 1 ] && [ $canbeon -eq 0 ]; then
+			stop_zen
+			ison=0
+		fi
+		sleep 1;
+	done
+}
+clean(){
+	if [[ -a /etc/.hosts ]]; then
+		stop_zen
+	fi
+}
 case "$1" in
 	start|-s)
 		if [[ -a /etc/.hosts ]]; then
@@ -110,17 +140,54 @@ case "$1" in
 		file=${file##*/}
 		sudo ln -s "$base/$file" $target
 		;;
-	*)
-		echo -e "Usage: \e[1;31mzenmode \e[1;34m[options]\e[0m"
+	watch|-w)
+		clean
+		watch
+		;;
+	addwatch|addWatch|-aw)
+		if [ -a "$base/watches/$2" ]; then
+			echo "Watch already listed!"
+			exit 1
+		else
+			touch "$base/watches/$2"
+		fi
+		;;
+	removewatch|removeWatch|-rw)
+		if [ -a "$base/watches/$2" ]; then
+			rm "$base/watches/$2"
+		else
+			echo "Watch does not exist!"
+			exit 1
+		fi
+		;;
+	listwatches|listWatches|-lw)
+		files=$(crawl "$base/watches")
 		echo
-	        echo -e "\e[1;34mOptions\e[0m available : "
-		echo -e "\e[1;32mstart \e[1;36m(-s)\e[0m : Start Zen Mode"
-		echo -e "\e[1;32mstop \e[1;36m(-k)\e[0m : Stop Zen Mode"
-		echo -e "\e[1;32mrestart \e[1;36m(-r)\e[1;32m / reload \e[0m: Restart Zen Mode"
-		echo -e "\e[1;32mallow \e[1;36m(-a) \e[1;31m<website>\e[0m : Enable access to the specified website domain"
-		echo -e "\e[1;32mdeny \e[1;36m(-d) \e[1;31m<website>\e[0m : Deny access to the specified website domain"
-		echo -e "\e[1;32mlist \e[1;36m(-l)\e[0m : Print the denial list"	
-		echo -e "\e[1;32minstall \e[1;36m(--short)\e[0m : Install ZenMode (--short installs under the name \"zm\")"
+		for watch in $files 
+		do
+			echo $watch
+		done
+		echo
+		;;
+	clean|-c)
+		clean
+		;;
+	*)
+		echo -e "Usage: \033[1;31mzenmode \033[1;34m[options]\033[0m"
+		echo
+	        echo -e "\033[1;34mOptions\033[0m available : "
+		echo -e "\033[1;32mstart \033[1;36m(-s)\033[0m : Start Zen Mode"
+		echo -e "\033[1;32mstop \033[1;36m(-k)\033[0m : Stop Zen Mode"
+		echo -e "\033[1;32mrestart \033[1;36m(-r)\033[1;32m / reload \033[0m: Restart Zen Mode"
+		echo -e "\033[1;32mallow \033[1;36m(-a) \033[1;31m<website>\033[0m : Enable access to the specified website domain"
+		echo -e "\033[1;32mdeny \033[1;36m(-d) \033[1;31m<website>\033[0m : Deny access to the specified website domain"
+		echo -e "\033[1;32mlist \033[1;36m(-l)\033[0m : Print the denial list"	
+		echo -e "\033[1;32minstall \033[1;36m(--short)\033[0m : Install ZenMode (--short installs under the name 'zm')"
+		echo -e "\033[1;32mwatch \033[1;36m(-w)\033[0m : Watch for applications runnig and deny access if active."
+		echo -e "\033[1;32maddwatch \033[1;36m(addWatch|-aw)\033[0m : Add a new application to the watch list."
+		echo -e "\033[1;32mremovewatch \033[1;36m(removeWatch|-rw)\033[0m : Remove the application to the watch list."
+		echo -e "\033[1;32mlistwatches \033[1;36m(listWatches|-lw)\033[0m : Print the watch list."
+		echo -e "\033[1;32mclean \033[1;36m(-c)\033[0m : Clean the cache."
 		echo
 		exit 1
 		;;
