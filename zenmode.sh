@@ -2,6 +2,7 @@
 
 target=""
 add="127.0.0.1	"
+addv6="fe80::1%lo0 "
 scriptname=$(readlink "$0")
 base="$(cd -P "$(dirname "$scriptname")" && pwd)" 
 stop_zen()	{
@@ -16,12 +17,25 @@ start_zen()	{
 	echo "Starting zen mode ..."
 	
 	script="$base/denials"
-	add="$add$(crawl $script) "
+	#add="$add$(crawl $script) "
+	#addv6="$addv6$(crawl $script) "
 	target=$(read_file /etc/hosts "\n")
 
+    set1=$(construct_series $script $add)
+    set2=$(construct_series $script $addv6)
+
 	aux=$(echo -e $target | sudo tee /etc/.hosts)
-	target="$target\n$add"
+	target="$target\n$set1\n$set2"
 	aux=$(echo -e $target | sudo tee /etc/hosts)
+}
+construct_series() {
+    domains=$(crawl $1)
+    prefix=$2
+    ret=""
+    for domain in $domains; do
+        ret="$ret $prefix  $domain\n"
+    done
+    echo $ret
 }
 read_file()	{
 	c=""
@@ -39,7 +53,7 @@ crawl()	 {
 		script="$script/*"
 		for file in $script
 		do
-			add="$add${file##*\/} "
+			add="$add www.${file##*\/} ${file##*\/}"
 		done
 	fi
 	echo $add
@@ -55,6 +69,7 @@ watch()	{
 		for watch in $files
 		do
 			if [ $(echo $aux | grep -c $watch) -gt 0 ]; then
+                echo "Found $watch running"
 				if [ $ison -eq 0 ]; then
 					start_zen
 					ison=1
